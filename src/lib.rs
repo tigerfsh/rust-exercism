@@ -58,6 +58,92 @@ impl Clock {
     }
 }
 
+use std::collections::HashSet;
+
+pub fn anagrams_for<'a>(word: &str, possible_anagrams: &[&'a str]) -> HashSet<&'a str> {
+    // Helper: normalize a word (lowercase, sort chars)
+    fn normalize(s: &str) -> Vec<char> {
+        let mut chars: Vec<char> = s.chars().flat_map(|c| c.to_lowercase()).collect();
+        chars.sort_unstable();
+        chars
+    }
+
+    let word_norm = normalize(word);
+    let word_lower = word.to_lowercase();
+
+    possible_anagrams
+        .iter()
+        .filter_map(|&candidate| {
+            if candidate.to_lowercase() == word_lower {
+                return None;
+            }
+            if normalize(candidate) == word_norm {
+                Some(candidate)
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod anagram_tests {
+    use super::anagrams_for;
+    use std::collections::HashSet;
+
+    fn set_of<'a>(items: &[&'a str]) -> HashSet<&'a str> {
+        items.iter().copied().collect()
+    }
+
+    #[test]
+    fn test_no_anagrams() {
+        let word = "hello";
+        let candidates = ["world", "rust", "test"];
+        let result = anagrams_for(word, &candidates);
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_simple_anagram() {
+        let word = "listen";
+        let candidates = ["enlists", "google", "inlets", "banana"];
+        let result = anagrams_for(word, &candidates);
+        assert_eq!(result, set_of(&["inlets"]));
+    }
+
+    #[test]
+    fn test_multiple_anagrams() {
+        let word = "master";
+        let candidates = ["stream", "maters", "tamers", "something"];
+        let result = anagrams_for(word, &candidates);
+        assert_eq!(result, set_of(&["stream", "maters", "tamers"]));
+    }
+
+    #[test]
+    fn test_case_insensitive() {
+        let word = "Orchestra";
+        let candidates = ["cashregister", "Carthorse", "radishes"];
+        let result = anagrams_for(word, &candidates);
+        assert_eq!(result, set_of(&["Carthorse"]));
+    }
+
+    #[test]
+    fn test_same_word_not_anagram() {
+        let word = "banana";
+        let candidates = ["Banana"];
+        let result = anagrams_for(word, &candidates);
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_unicode_anagram() {
+        let word = "åbc";
+        let candidates = ["båc", "cab", "abc"];
+        let result = anagrams_for(word, &candidates);
+        assert_eq!(result, set_of(&["båc"]));
+    }
+}
+
 #[cfg(test)]
 mod clock_tests {
     use super::Clock;
@@ -160,7 +246,7 @@ mod clock_tests {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use time_macros::datetime;
     use time::{Date, Time, Month};
 
