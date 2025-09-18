@@ -225,7 +225,10 @@ let b = "abc";
 let c = b.as_bytes();
 println!("c: {c:?}"); // c: [97, 98, 99]
 */
+
 pub fn annotate(garden: &[&str]) -> Vec<String> {
+    let star_char_but_byte = 42u8;
+
     let height = garden.len();
     if height == 0 {
         return Vec::new();
@@ -237,8 +240,8 @@ pub fn annotate(garden: &[&str]) -> Vec<String> {
         let bytes = row.as_bytes();
         let mut annotated_row = Vec::with_capacity(width);
         for (j, &cell) in bytes.iter().enumerate() {
-            if cell == b'*' {
-                annotated_row.push('*' as u8);
+            if cell == star_char_but_byte {
+                annotated_row.push(star_char_but_byte);
             } else {
                 let mut count = 0;
                 for di in [-1i32, 0, 1] {
@@ -248,10 +251,8 @@ pub fn annotate(garden: &[&str]) -> Vec<String> {
                         }
                         let ni = i as i32 + di;
                         let nj = j as i32 + dj;
-                        if ni >= 0 && ni < height as i32 && nj >= 0 && nj < width as i32 {
-                            if garden[ni as usize].as_bytes()[nj as usize] == b'*' {
-                                count += 1;
-                            }
+                        if ni >= 0 && ni < height as i32 && nj >= 0 && nj < width as i32 && garden[ni as usize].as_bytes()[nj as usize] == star_char_but_byte {
+                            count += 1;
                         }
                     }
                 }
