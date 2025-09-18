@@ -161,6 +161,113 @@ mod planet_tests {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum Comparison {
+    Equal,
+    Sublist,
+    Superlist,
+    Unequal,
+}
+
+pub fn sublist(first_list: &[i32], second_list: &[i32]) -> Comparison {
+    
+    fn is_sublist(small: &[i32], big: &[i32]) -> bool {
+        if small.is_empty() {
+            return true;
+        }
+        if small.len() > big.len() {
+            return false;
+        }
+        big.windows(small.len()).any(|window| window == small)
+    }
+
+    if first_list == second_list {
+        Comparison::Equal
+    } else if is_sublist(first_list, second_list) {
+        Comparison::Sublist
+    } else if is_sublist(second_list, first_list) {
+        Comparison::Superlist
+    } else {
+        Comparison::Unequal
+    }
+}
+
+#[cfg(test)]
+mod sublist_tests {
+    use super::*;
+
+    #[test]
+    fn test_equal_lists() {
+        let a = [1, 2, 3];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Equal);
+    }
+
+    #[test]
+    fn test_sublist_at_start() {
+        let a = [1, 2];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Sublist);
+    }
+
+    #[test]
+    fn test_sublist_at_end() {
+        let a = [2, 3];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Sublist);
+    }
+
+    #[test]
+    fn test_superlist() {
+        let a = [1, 2, 3, 4];
+        let b = [2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Superlist);
+    }
+
+    #[test]
+    fn test_unequal_lists() {
+        let a = [1, 2, 4];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Unequal);
+    }
+
+    #[test]
+    fn test_empty_and_nonempty() {
+        let a: [i32; 0] = [];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Sublist);
+        assert_eq!(sublist(&b, &a), Comparison::Superlist);
+    }
+
+    #[test]
+    fn test_both_empty() {
+        let a: [i32; 0] = [];
+        let b: [i32; 0] = [];
+        assert_eq!(sublist(&a, &b), Comparison::Equal);
+    }
+
+    #[test]
+    fn test_single_element_sublist() {
+        let a = [2];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Sublist);
+    }
+
+    #[test]
+    fn test_no_overlap() {
+        let a = [4, 5, 6];
+        let b = [1, 2, 3];
+        assert_eq!(sublist(&a, &b), Comparison::Unequal);
+    }
+
+    #[test]
+    fn test_repeated_elements() {
+        let a = [1, 1, 2];
+        let b = [1, 1, 1, 2, 1];
+        assert_eq!(sublist(&a, &b), Comparison::Sublist);
+    }
+}
+
 #[cfg(test)]
 mod anagram_tests {
     use super::anagrams_for;
