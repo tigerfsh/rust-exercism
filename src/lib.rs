@@ -301,7 +301,7 @@ pub fn is_valid(code: &str) -> bool {
     }
 
     let total_num: u32 = result.iter().sum();
-    
+
     if result.len() == 1 && total_num == 0 {
         return false
     }
@@ -311,6 +311,58 @@ pub fn is_valid(code: &str) -> bool {
     }
 
     total_num % 10 == 0
+}
+
+pub fn is_armstrong_number(num: u32) -> bool {
+    let num_string = num.to_string();
+
+    let total = num_string
+        .chars()
+        .filter_map(|n| n.to_digit(10))
+        .map(|num| num.pow(num_string.len() as u32))
+        .sum::<u32>();
+
+    num == total
+}
+
+#[cfg(test)]
+mod armstrong_tests {
+    use super::*;
+
+    #[test]
+    fn test_single_digit() {
+        assert!(is_armstrong_number(5));
+        assert!(is_armstrong_number(0));
+        assert!(is_armstrong_number(9));
+    }
+
+    #[test]
+    fn test_two_digits() {
+        assert!(!is_armstrong_number(10));
+        assert!(!is_armstrong_number(99));
+    }
+
+    #[test]
+    fn test_three_digits() {
+        assert!(is_armstrong_number(153));
+        assert!(is_armstrong_number(370));
+        assert!(is_armstrong_number(371));
+        assert!(is_armstrong_number(407));
+        assert!(!is_armstrong_number(100));
+        assert!(!is_armstrong_number(200));
+    }
+
+    #[test]
+    fn test_four_digits() {
+        assert!(is_armstrong_number(1634));
+        assert!(!is_armstrong_number(1234));
+    }
+
+    #[test]
+    fn test_large_number() {
+        assert!(is_armstrong_number(9474));
+        assert!(!is_armstrong_number(9475));
+    }
 }
 
 #[cfg(test)]
