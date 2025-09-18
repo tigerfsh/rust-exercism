@@ -220,6 +220,11 @@ Can you complete the challenge without cloning the input?
 
 */
 
+/*
+let b = "abc";
+let c = b.as_bytes();
+println!("c: {c:?}"); // c: [97, 98, 99]
+*/
 pub fn annotate(garden: &[&str]) -> Vec<String> {
     let height = garden.len();
     if height == 0 {
