@@ -143,6 +143,25 @@ impl Planet for Neptune {
 }
 
 #[cfg(test)]
+mod planet_tests {
+    use super::*;
+
+    #[test]
+    fn test_earth_years() {
+        let duration = CDuration::from(31_557_600);
+        let years = Earth::years_during(&duration);
+        assert!((years - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn test_mercury_years() {
+        let duration = CDuration::from(31_557_600);
+        let years = Mercury::years_during(&duration);
+        assert!((years - (1.0 / 0.2408467)).abs() < 1e-6);
+    }
+}
+
+#[cfg(test)]
 mod anagram_tests {
     use super::anagrams_for;
     use std::collections::HashSet;
