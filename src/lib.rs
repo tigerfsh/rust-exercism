@@ -269,6 +269,65 @@ pub fn annotate(garden: &[&str]) -> Vec<String> {
     result
 }
 
+pub fn is_valid(code: &str) -> bool {
+    fn double_one_num(n: u32) -> u32 {
+        let dn = n *2;
+        if dn > 9 {
+            let a = dn / 10;
+            let b = dn % 10;
+            return a + b;
+        }
+
+        dn
+    }
+
+    let mut result = Vec::new();
+
+    let code_no_spaces: String = code.chars().filter(|c| !c.is_whitespace()).collect();
+    let code = &code_no_spaces;
+    for (reverse_index, char) in code.chars().rev().enumerate() {
+
+        // let num = char.to_digit(10);
+        let Some(num) = char.to_digit(10) else {
+            return false
+        };
+
+        let position_from_end = reverse_index + 1;
+        if position_from_end % 2 == 0 {
+            result.push(double_one_num(num));
+        } else {
+            result.push(num);
+        }
+    }
+
+    let total_num: u32 = result.iter().sum();
+    
+    if result.len() == 1 && total_num == 0 {
+        return false
+    }
+
+    if result.len() > 1 && total_num == 0 {
+        return true
+    }
+
+    total_num % 10 == 0
+}
+
+#[cfg(test)]
+mod luhn_tests {
+    use super::*;
+
+    #[test]
+    fn test_is_valid() {
+        assert!(is_valid("4539 3195 0343 6467"));
+        assert!(!is_valid("0"));
+        assert!(!is_valid(" 0"));
+        assert!(!is_valid("123#4"));
+        assert!(is_valid("0000 0"));
+    }
+}
+
+
 #[cfg(test)]
 mod sublist_tests {
     use super::*;
