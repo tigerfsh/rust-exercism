@@ -337,6 +337,24 @@ pub fn difference(n: u32) -> u32 {
     square_of_sum(n) - sum_of_squares(n)
 }
 
+// 判断是否符合要求
+// 题目要求：
+// 1. 计算第 n 个格子的麦粒数（第 1 格为 1 粒，每一格是前一格的 2 倍）
+// 2. 计算整个棋盘（64 格）上的麦粒总数
+
+// 第 n 格的麦粒数是 2^(n-1)
+pub fn square(s: u32) -> u64 {
+    if s == 0 || s > 64 {
+        panic!("Square must be between 1 and 64");
+    }
+    1u64 << (s - 1)
+}
+
+// 总数是 2^64 - 1
+pub fn total() -> u64 {
+    (1..=64).map(square).sum::<u64>()
+}
+
 #[cfg(test)]
 mod armstrong_tests {
     use super::*;
