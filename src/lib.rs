@@ -1,6 +1,5 @@
 use time::PrimitiveDateTime as DateTime;
-use time::{Date, Duration, Month, Time};
-use time_macros::datetime;
+use time::Duration;
 
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
@@ -161,6 +160,9 @@ mod clock_tests {
 #[cfg(test)]
 mod tests {
     use super::*;
+    
+    use time_macros::datetime;
+    use time::{Date, Time, Month};
 
     #[test]
     fn test_after() {
