@@ -192,6 +192,77 @@ pub fn sublist(first_list: &[i32], second_list: &[i32]) -> Comparison {
     }
 }
 
+/*
+Introduction
+Flower Field is a compassionate reimagining of the popular game Minesweeper. The object of the game is to find all the flowers in the garden using numeric hints that indicate how many flowers are directly adjacent (horizontally, vertically, diagonally) to a square. "Flower Field" shipped in regional versions of Microsoft Windows in Italy, Germany, South Korea, Japan and Taiwan.
+
+Instructions
+Your task is to add flower counts to empty squares in a completed Flower Field garden. The garden itself is a rectangle board composed of squares that are either empty (' ') or a flower ('*').
+
+For each empty square, count the number of flowers adjacent to it (horizontally, vertically, diagonally). If the empty square has no adjacent flowers, leave it empty. Otherwise replace it with the count of adjacent flowers.
+
+For example, you may receive a 5 x 4 board like this (empty spaces are represented here with the '·' character for display on screen):
+
+·*·*·
+··*··
+··*··
+·····
+Which your code should transform into this:
+
+1*3*1
+13*31
+·2*2·
+·111·
+Performance Hint
+All the inputs and outputs are in ASCII. Rust Strings and &str are utf8, so while one might expect "Hello".chars() to be simple, it actually has to check each char to see if it's 1, 2, 3 or 4 u8s long. If we know a &str is ASCII then we can call .as_bytes() and refer to the underlying data as a &[u8] (byte slice). Iterating over a slice of ASCII bytes is much quicker as there are no codepoints involved - every ASCII byte is one u8 long.
+
+Can you complete the challenge without cloning the input?
+
+*/
+
+pub fn annotate(garden: &[&str]) -> Vec<String> {
+    let height = garden.len();
+    if height == 0 {
+        return Vec::new();
+    }
+    let width = garden[0].len();
+    let mut result = Vec::with_capacity(height);
+
+    for (i, row) in garden.iter().enumerate() {
+        let bytes = row.as_bytes();
+        let mut annotated_row = Vec::with_capacity(width);
+        for (j, &cell) in bytes.iter().enumerate() {
+            if cell == b'*' {
+                annotated_row.push('*' as u8);
+            } else {
+                let mut count = 0;
+                for di in [-1i32, 0, 1] {
+                    for dj in [-1i32, 0, 1] {
+                        if di == 0 && dj == 0 {
+                            continue;
+                        }
+                        let ni = i as i32 + di;
+                        let nj = j as i32 + dj;
+                        if ni >= 0 && ni < height as i32 && nj >= 0 && nj < width as i32 {
+                            if garden[ni as usize].as_bytes()[nj as usize] == b'*' {
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+                if count == 0 {
+                    annotated_row.push(b' ');
+                } else {
+                    annotated_row.push(b'0' + count as u8);
+                }
+            }
+        }
+        // Safety: all bytes are ASCII, so this is safe
+        result.push(String::from_utf8(annotated_row).unwrap());
+    }
+    result
+}
+
 #[cfg(test)]
 mod sublist_tests {
     use super::*;
