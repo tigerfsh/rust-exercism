@@ -405,6 +405,95 @@ pub fn nth(n: u32) -> u32 {
     unreachable!()
 }
 
+/*
+Instructions
+Compute the prime factors of a given natural number.
+
+A prime number is only evenly divisible by itself and 1.
+
+Note that 1 is not a prime number.
+
+Example
+What are the prime factors of 60?
+
+Our first divisor is 2. 2 goes into 60, leaving 30.
+2 goes into 30, leaving 15.
+2 doesn't go cleanly into 15. So let's move on to our next divisor, 3.
+3 goes cleanly into 15, leaving 5.
+3 does not go cleanly into 5. The next possible factor is 4.
+4 does not go cleanly into 5. The next possible factor is 5.
+5 does go cleanly into 5.
+We're left only with 1, so now, we're done.
+Our successful divisors in that computation represent the list of prime factors of 60: 2, 2, 3, and 5.
+*/
+
+pub fn factors(mut n: u64) -> Vec<u64> {
+    let mut result = Vec::new();
+    if n < 2 {
+        return result;
+    }
+    let mut divisor = 2;
+    while n > 1 {
+        while n % divisor == 0 {
+            result.push(divisor);
+            n /= divisor;
+        }
+        divisor += 1;
+        // 优化：如果divisor*divisor > n，且n>1，则n本身是质数
+        if divisor * divisor > n && n > 1 {
+            result.push(n);
+            break;
+        }
+    }
+    result
+}
+
+#[cfg(test)]
+mod factors_tests {
+    use super::*;
+
+    #[test]
+    fn test_factors_of_1() {
+        assert_eq!(factors(1), vec![]);
+    }
+
+    #[test]
+    fn test_factors_of_2() {
+        assert_eq!(factors(2), vec![2]);
+    }
+
+    #[test]
+    fn test_factors_of_3() {
+        assert_eq!(factors(3), vec![3]);
+    }
+
+    #[test]
+    fn test_factors_of_4() {
+        assert_eq!(factors(4), vec![2, 2]);
+    }
+
+    #[test]
+    fn test_factors_of_6() {
+        assert_eq!(factors(6), vec![2, 3]);
+    }
+
+    #[test]
+    fn test_factors_of_60() {
+        assert_eq!(factors(60), vec![2, 2, 3, 5]);
+    }
+
+    #[test]
+    fn test_factors_of_large_prime() {
+        assert_eq!(factors(97), vec![97]);
+    }
+
+    #[test]
+    fn test_factors_of_large_composite() {
+        assert_eq!(factors(2*2*3*3*5*7*11), vec![2,2,3,3,5,7,11]);
+    }
+}
+
+
 #[cfg(test)]
 mod nth_prime_tests {
     use super::*;
