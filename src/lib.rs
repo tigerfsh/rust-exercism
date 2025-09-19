@@ -1,4 +1,3 @@
-
 use time::Duration;
 use time::PrimitiveDateTime as DateTime;
 
@@ -472,16 +471,12 @@ pub fn abbreviate(phrase: &str) -> String {
         if is_super_ascii_alphabetic(c) {
             if prev_is_separator {
                 acronym.push(c.to_ascii_uppercase());
-            } else {
-                if pre_is_lower_case && c.is_ascii_uppercase() {
-                    acronym.push(c.to_ascii_uppercase());
-                }
+            } else if pre_is_lower_case && c.is_ascii_uppercase() {
+                acronym.push(c.to_ascii_uppercase());
             }
             prev_is_separator = false;
-        } else {
-            if c == '-' || c.is_whitespace() || !is_super_ascii_alphabetic(c) {
-                prev_is_separator = true;
-            }
+        } else if c == '-' || c.is_whitespace() || !is_super_ascii_alphabetic(c) {
+            prev_is_separator = true;
         }
 
         pre_is_lower_case = c.is_ascii_lowercase();
