@@ -448,6 +448,94 @@ pub fn factors(mut n: u64) -> Vec<u64> {
     result
 }
 
+pub fn abbreviate(phrase: &str) -> String {
+    let mut acronym = String::new();
+    let mut prev_is_separator = true;
+    let mut pre_is_lower_case = false;
+
+    fn is_super_ascii_alphabetic(c: char) -> bool {
+        if c.is_ascii_alphabetic() || c == '\'' {
+            return true;
+        }
+        false
+    }
+
+    let nor_phrase = phrase.replace("and", " ");
+    for c in nor_phrase.chars() {
+        if is_super_ascii_alphabetic(c) {
+            if prev_is_separator {
+                acronym.push(c.to_ascii_uppercase());
+            } else if pre_is_lower_case && c.is_ascii_uppercase() {
+                acronym.push(c.to_ascii_uppercase());
+            }
+            prev_is_separator = false;
+        } else if c == '-' || c.is_whitespace() || !is_super_ascii_alphabetic(c) {
+            prev_is_separator = true;
+        }
+
+        pre_is_lower_case = c.is_ascii_lowercase();
+    }
+
+    acronym
+}
+
+
+#[cfg(test)]
+mod abbreviate_tests {
+    use super::*;
+
+    #[test]
+    fn test_basic() {
+        assert_eq!(abbreviate("As Soon As Possible"), "ASAP");
+    }
+
+    #[test]
+    fn test_hyphenated() {
+        assert_eq!(abbreviate("Liquid-crystal display"), "LCD");
+    }
+
+    #[test]
+    fn test_punctuation() {
+        assert_eq!(abbreviate("Thank George It's Friday!"), "TGIF");
+    }
+
+    #[test]
+    fn test_single_word() {
+        assert_eq!(abbreviate("Rust"), "R");
+    }
+
+    #[test]
+    fn test_empty_string() {
+        assert_eq!(abbreviate(""), "");
+    }
+
+    #[test]
+    fn test_multiple_hyphens_and_spaces() {
+        assert_eq!(abbreviate("Hyper-text Markup Language"), "HTML");
+    }
+
+    #[test]
+    fn test_leading_and_trailing_whitespace() {
+        assert_eq!(abbreviate("  National Aeronautics and Space Administration  "), "NASA");
+    }
+
+    #[test]
+    fn test_all_lowercase() {
+        assert_eq!(abbreviate("central processing unit"), "CPU");
+    }
+
+    #[test]
+    fn test_mixed_case_and_punctuation() {
+        assert_eq!(abbreviate("Complementary metal-oxide semiconductor!"), "CMOS");
+    }
+
+    #[test]
+    fn test_upper_char_in_word() {
+        assert_eq!(abbreviate("HyperText Markup Language"), "HTML")
+    }
+}
+
+
 #[cfg(test)]
 mod factors_tests {
     use super::*;
