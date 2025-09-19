@@ -1,5 +1,6 @@
-use time::PrimitiveDateTime as DateTime;
+
 use time::Duration;
+use time::PrimitiveDateTime as DateTime;
 
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
@@ -30,7 +31,7 @@ impl Clock {
         let extra_h = minutes / 60;
         let mut m = minutes % 60;
         let mut h = (hours + extra_h) % 24;
-        
+
         if m < 0 {
             h -= 1;
             m += 60;
@@ -38,16 +39,19 @@ impl Clock {
 
         h = ((h % 24) + 24) % 24;
         m = ((m % 60) + 60) % 60;
-        Self { hours: h, minutes: m, seconds: 0 }
+        Self {
+            hours: h,
+            minutes: m,
+            seconds: 0,
+        }
     }
-
 
     pub fn add_minutes(&self, minutes: i32) -> Self {
         let mut total_minutes = self.hours * 60 + self.minutes + minutes;
         if total_minutes < 0 {
             total_minutes = total_minutes % (24 * 60) + 24 * 60
         }
-        
+
         let h = ((total_minutes / 60) % 24 + 24) % 24;
         let m = ((total_minutes % 60) + 60) % 60;
         Self {
@@ -170,7 +174,6 @@ pub enum Comparison {
 }
 
 pub fn sublist(first_list: &[i32], second_list: &[i32]) -> Comparison {
-    
     fn is_sublist(small: &[i32], big: &[i32]) -> bool {
         if small.is_empty() {
             return true;
@@ -251,7 +254,12 @@ pub fn annotate(garden: &[&str]) -> Vec<String> {
                         }
                         let ni = i as i32 + di;
                         let nj = j as i32 + dj;
-                        if ni >= 0 && ni < height as i32 && nj >= 0 && nj < width as i32 && garden[ni as usize].as_bytes()[nj as usize] == star_char_but_byte {
+                        if ni >= 0
+                            && ni < height as i32
+                            && nj >= 0
+                            && nj < width as i32
+                            && garden[ni as usize].as_bytes()[nj as usize] == star_char_but_byte
+                        {
                             count += 1;
                         }
                     }
@@ -271,7 +279,7 @@ pub fn annotate(garden: &[&str]) -> Vec<String> {
 
 pub fn is_valid(code: &str) -> bool {
     fn double_one_num(n: u32) -> u32 {
-        let dn = n *2;
+        let dn = n * 2;
         if dn > 9 {
             let a = dn / 10;
             let b = dn % 10;
@@ -286,10 +294,9 @@ pub fn is_valid(code: &str) -> bool {
     let code_no_spaces: String = code.chars().filter(|c| !c.is_whitespace()).collect();
     let code = &code_no_spaces;
     for (reverse_index, char) in code.chars().rev().enumerate() {
-
         // let num = char.to_digit(10);
         let Some(num) = char.to_digit(10) else {
-            return false
+            return false;
         };
 
         let position_from_end = reverse_index + 1;
@@ -303,11 +310,11 @@ pub fn is_valid(code: &str) -> bool {
     let total_num: u32 = result.iter().sum();
 
     if result.len() == 1 && total_num == 0 {
-        return false
+        return false;
     }
 
     if result.len() > 1 && total_num == 0 {
-        return true
+        return true;
     }
 
     total_num % 10 == 0
@@ -359,11 +366,11 @@ pub fn is_leap_year(year: u64) -> bool {
     if year % 4 == 0 {
         if year % 100 == 0 {
             if year % 400 == 0 {
-                return true
+                return true;
             }
-            return false
+            return false;
         }
-        return true
+        return true;
     }
 
     false
@@ -465,12 +472,16 @@ pub fn abbreviate(phrase: &str) -> String {
         if is_super_ascii_alphabetic(c) {
             if prev_is_separator {
                 acronym.push(c.to_ascii_uppercase());
-            } else if pre_is_lower_case && c.is_ascii_uppercase() {
-                acronym.push(c.to_ascii_uppercase());
+            } else {
+                if pre_is_lower_case && c.is_ascii_uppercase() {
+                    acronym.push(c.to_ascii_uppercase());
+                }
             }
             prev_is_separator = false;
-        } else if c == '-' || c.is_whitespace() || !is_super_ascii_alphabetic(c) {
-            prev_is_separator = true;
+        } else {
+            if c == '-' || c.is_whitespace() || !is_super_ascii_alphabetic(c) {
+                prev_is_separator = true;
+            }
         }
 
         pre_is_lower_case = c.is_ascii_lowercase();
@@ -478,7 +489,6 @@ pub fn abbreviate(phrase: &str) -> String {
 
     acronym
 }
-
 
 #[cfg(test)]
 mod abbreviate_tests {
@@ -516,7 +526,10 @@ mod abbreviate_tests {
 
     #[test]
     fn test_leading_and_trailing_whitespace() {
-        assert_eq!(abbreviate("  National Aeronautics and Space Administration  "), "NASA");
+        assert_eq!(
+            abbreviate("  National Aeronautics and Space Administration  "),
+            "NASA"
+        );
     }
 
     #[test]
@@ -526,7 +539,10 @@ mod abbreviate_tests {
 
     #[test]
     fn test_mixed_case_and_punctuation() {
-        assert_eq!(abbreviate("Complementary metal-oxide semiconductor!"), "CMOS");
+        assert_eq!(
+            abbreviate("Complementary metal-oxide semiconductor!"),
+            "CMOS"
+        );
     }
 
     #[test]
@@ -534,7 +550,6 @@ mod abbreviate_tests {
         assert_eq!(abbreviate("HyperText Markup Language"), "HTML")
     }
 }
-
 
 #[cfg(test)]
 mod factors_tests {
@@ -577,10 +592,12 @@ mod factors_tests {
 
     #[test]
     fn test_factors_of_large_composite() {
-        assert_eq!(factors(2*2*3*3*5*7*11), vec![2,2,3,3,5,7,11]);
+        assert_eq!(
+            factors(2 * 2 * 3 * 3 * 5 * 7 * 11),
+            vec![2, 2, 3, 3, 5, 7, 11]
+        );
     }
 }
-
 
 #[cfg(test)]
 mod nth_prime_tests {
@@ -611,7 +628,6 @@ mod nth_prime_tests {
         assert_eq!(nth(100), 547);
     }
 }
-
 
 #[cfg(test)]
 mod armstrong_tests {
@@ -666,7 +682,6 @@ mod luhn_tests {
         assert!(is_valid("0000 0"));
     }
 }
-
 
 #[cfg(test)]
 mod sublist_tests {
@@ -824,7 +839,7 @@ mod clock_tests {
         let c2 = Clock::new(12, 30);
         assert_eq!(c1, c2);
     }
-    
+
     #[test]
     fn test_new_overflow_hours() {
         let c = Clock::new(25, 0);
@@ -905,8 +920,8 @@ mod clock_tests {
 mod tests {
     use super::*;
 
+    use time::{Date, Month, Time};
     use time_macros::datetime;
-    use time::{Date, Time, Month};
 
     #[test]
     fn test_after() {
