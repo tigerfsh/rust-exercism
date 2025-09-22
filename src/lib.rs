@@ -485,6 +485,124 @@ pub fn abbreviate(phrase: &str) -> String {
     acronym
 }
 
+#[derive(Debug)]
+pub struct HighScores {
+    scores: Vec<u32>,
+}
+
+impl HighScores {
+    pub fn new(scores: &[u32]) -> Self {
+        HighScores {
+            scores: scores.to_vec(),
+        }
+    }
+
+    pub fn scores(&self) -> &[u32] {
+        &self.scores
+    }
+
+    pub fn latest(&self) -> Option<u32> {
+        self.scores.last().copied()
+    }
+
+    pub fn personal_best(&self) -> Option<u32> {
+        self.scores.iter().max().copied()
+    }
+
+    pub fn personal_top_three(&self) -> Vec<u32> {
+        let mut top = self.scores.clone();
+        top.sort_unstable_by(|a, b| b.cmp(a));
+        top.into_iter().take(3).collect()
+    }
+}
+
+#[cfg(test)]
+mod high_scores_tests {
+    use super::*;
+
+    #[test]
+    fn test_scores_are_returned() {
+        let scores = [30, 50, 20, 70];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.scores(), &scores);
+    }
+
+    #[test]
+    fn test_latest_score() {
+        let scores = [100, 0, 90, 30];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.latest(), Some(30));
+    }
+
+    #[test]
+    fn test_latest_score_empty() {
+        let scores: [u32; 0] = [];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.latest(), None);
+    }
+
+    #[test]
+    fn test_personal_best() {
+        let scores = [40, 100, 70];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_best(), Some(100));
+    }
+
+    #[test]
+    fn test_personal_best_empty() {
+        let scores: [u32; 0] = [];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_best(), None);
+    }
+
+    #[test]
+    fn test_personal_top_three() {
+        let scores = [70, 50, 20, 30, 100];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_top_three(), vec![100, 70, 50]);
+    }
+
+    #[test]
+    fn test_personal_top_three_with_ties() {
+        let scores = [40, 20, 40, 30];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_top_three(), vec![40, 40, 30]);
+    }
+
+    #[test]
+    fn test_personal_top_three_less_than_three() {
+        let scores = [10, 20];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_top_three(), vec![20, 10]);
+    }
+
+    #[test]
+    fn test_personal_top_three_empty() {
+        let scores: [u32; 0] = [];
+        let high_scores = HighScores::new(&scores);
+        let top_three: Vec<u32> = vec![];
+        assert_eq!(high_scores.personal_top_three(), top_three);
+    }
+
+    #[test]
+    fn test_scores_with_duplicates() {
+        let scores = [50, 50, 50];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.personal_best(), Some(50));
+        assert_eq!(high_scores.personal_top_three(), vec![50, 50, 50]);
+    }
+
+    #[test]
+    fn test_scores_with_one_element() {
+        let scores = [42];
+        let high_scores = HighScores::new(&scores);
+        assert_eq!(high_scores.latest(), Some(42));
+        assert_eq!(high_scores.personal_best(), Some(42));
+        assert_eq!(high_scores.personal_top_three(), vec![42]);
+    }
+}
+
+
 #[cfg(test)]
 mod abbreviate_tests {
     use super::*;
