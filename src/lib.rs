@@ -546,6 +546,93 @@ pub fn build_proverb(list: &[&str]) -> String {
     lines.join("\n")
 }
 
+/*
+If a given number:
+
+is divisible by 3, add "Pling" to the result.
+is divisible by 5, add "Plang" to the result.
+is divisible by 7, add "Plong" to the result.
+is not divisible by 3, 5, or 7, the result should be the number as a string.
+*/
+pub fn raindrops(n: u32) -> String {
+    let mut result = String::new();
+    if n % 3 == 0 {
+        result.push_str("Pling");
+    }
+    if n % 5 == 0 {
+        result.push_str("Plang");
+    }
+    if n % 7 == 0 {
+        result.push_str("Plong");
+    }
+    if result.is_empty() {
+        result = n.to_string();
+    }
+    result
+}
+
+#[cfg(test)]
+mod raindrops_tests {
+    use super::*;
+
+    #[test]
+    fn test_divisible_by_3() {
+        assert_eq!(raindrops(3), "Pling");
+        assert_eq!(raindrops(6), "Pling");
+        assert_eq!(raindrops(9), "Pling");
+    }
+
+    #[test]
+    fn test_divisible_by_5() {
+        assert_eq!(raindrops(5), "Plang");
+        assert_eq!(raindrops(10), "Plang");
+        assert_eq!(raindrops(20), "Plang");
+    }
+
+    #[test]
+    fn test_divisible_by_7() {
+        assert_eq!(raindrops(7), "Plong");
+        assert_eq!(raindrops(14), "Plong");
+        assert_eq!(raindrops(49), "Plong");
+    }
+
+    #[test]
+    fn test_divisible_by_3_and_5() {
+        assert_eq!(raindrops(15), "PlingPlang");
+        assert_eq!(raindrops(30), "PlingPlang");
+    }
+
+    #[test]
+    fn test_divisible_by_3_and_7() {
+        assert_eq!(raindrops(21), "PlingPlong");
+        assert_eq!(raindrops(42), "PlingPlong");
+    }
+
+    #[test]
+    fn test_divisible_by_5_and_7() {
+        assert_eq!(raindrops(35), "PlangPlong");
+        assert_eq!(raindrops(70), "PlangPlong");
+    }
+
+    #[test]
+    fn test_divisible_by_3_5_7() {
+        assert_eq!(raindrops(105), "PlingPlangPlong");
+        assert_eq!(raindrops(210), "PlingPlangPlong");
+    }
+
+    #[test]
+    fn test_not_divisible_by_3_5_7() {
+        assert_eq!(raindrops(2), "2");
+        assert_eq!(raindrops(8), "8");
+        assert_eq!(raindrops(16), "16");
+    }
+
+    #[test]
+    fn test_zero() {
+        // 0 is divisible by any nonzero integer
+        assert_eq!(raindrops(0), "PlingPlangPlong");
+    }
+}
 
 
 #[cfg(test)]
