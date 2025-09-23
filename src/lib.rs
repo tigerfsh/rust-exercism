@@ -615,6 +615,25 @@ pub fn sum_of_multiples(limit: u32, factors: &[u32]) -> u32 {
     multiples.iter().sum()
 }
 
+pub fn reply(message: &str) -> &str {
+    let trimmed = message.trim();
+
+    if trimmed.is_empty() {
+        return "Fine. Be that way!";
+    }
+
+    let is_question = trimmed.ends_with('?');
+    let has_letters = trimmed.chars().any(|c| c.is_alphabetic());
+    let is_yelling = has_letters && trimmed.chars().filter(|c| c.is_alphabetic()).all(|c| c.is_uppercase());
+
+    match (is_yelling, is_question) {
+        (true, true) => "Calm down, I know what I'm doing!",
+        (true, false) => "Whoa, chill out!",
+        (false, true) => "Sure.",
+        _ => "Whatever.",
+    }
+}
+
 
 #[cfg(test)]
 mod raindrops_tests {
