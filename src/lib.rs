@@ -516,6 +516,63 @@ impl HighScores {
     }
 }
 
+use std::collections::BTreeMap;
+
+pub fn transform(h: &BTreeMap<i32, Vec<char>>) -> BTreeMap<char, i32> {
+    let mut map = BTreeMap::new();
+    for (p, chars) in h.iter() {
+        for &c in chars.iter() {
+            map.insert(c.to_ascii_lowercase(), *p);
+        }
+    }
+    map
+}
+
+#[cfg(test)]
+mod transform_tests {
+    use super::*;
+
+    #[test]
+    fn test_transform_basic() {
+        let mut input = BTreeMap::new();
+        input.insert(1, vec!['A', 'E', 'I', 'O', 'U']);
+        input.insert(2, vec!['D', 'G']);
+        let result = transform(&input);
+
+        let mut expected = BTreeMap::new();
+        expected.insert('a', 1);
+        expected.insert('e', 1);
+        expected.insert('i', 1);
+        expected.insert('o', 1);
+        expected.insert('u', 1);
+        expected.insert('d', 2);
+        expected.insert('g', 2);
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_transform_mixed_case() {
+        let mut input = BTreeMap::new();
+        input.insert(3, vec!['B', 'b', 'C', 'c']);
+        let result = transform(&input);
+
+        let mut expected = BTreeMap::new();
+        expected.insert('b', 3);
+        expected.insert('c', 3);
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_transform_empty() {
+        let input = BTreeMap::new();
+        let result = transform(&input);
+        let expected: BTreeMap<char, i32> = BTreeMap::new();
+        assert_eq!(result, expected);
+    }
+}
+
 #[cfg(test)]
 mod high_scores_tests {
     use super::*;
