@@ -634,6 +634,60 @@ pub fn reply(message: &str) -> &str {
     }
 }
 
+pub fn collatz(n: u64) -> Option<u64> {
+    if n == 0 {
+        return None;
+    }
+    let mut step = 0;
+    let mut m = n;
+
+    while m != 1 {
+        if m % 2 == 0 {
+            m /= 2;
+        } else {
+            // Check for overflow
+            if let Some(next) = m.checked_mul(3).and_then(|v| v.checked_add(1)) {
+                m = next;
+            } else {
+                return None;
+            }
+        }
+        step += 1;
+    }
+
+    Some(step)
+}
+
+#[cfg(test)]
+mod collatz_tests {
+    use super::collatz;
+
+    #[test]
+    fn test_collatz_basic() {
+        assert_eq!(collatz(1), Some(0));
+        assert_eq!(collatz(2), Some(1));
+        assert_eq!(collatz(3), Some(7));
+        assert_eq!(collatz(4), Some(2));
+        assert_eq!(collatz(5), Some(5));
+        assert_eq!(collatz(6), Some(8));
+        assert_eq!(collatz(7), Some(16));
+        assert_eq!(collatz(8), Some(3));
+        assert_eq!(collatz(9), Some(19));
+        assert_eq!(collatz(10), Some(6));
+    }
+
+    #[test]
+    fn test_collatz_zero() {
+        assert_eq!(collatz(0), None);
+    }
+
+    #[test]
+    fn test_collatz_large() {
+        // 27 is famous for a long sequence
+        assert_eq!(collatz(27), Some(111));
+    }
+}
+
 
 #[cfg(test)]
 mod raindrops_tests {
